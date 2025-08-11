@@ -34,33 +34,44 @@
         }
         /* Style for print */
         @media print {
-            body {
-                background-color: white;
+            @page {
+                size: A4 landscape; /* Suggest landscape for more horizontal space */
+                margin: 0.7cm; /* Reduce page margins */
+            }
+            body, html {
+                width: 100%;
+                height: auto;
+                -webkit-print-color-adjust: exact !important; /* Force colors to print in Chrome/Safari */
+                color-adjust: exact !important; /* Standard property for printing colors */
             }
             .no-print {
                 display: none;
             }
             table {
                 width: 100%;
-                border-collapse: collapse;
+                border-collapse: collapse;A
             }
-            /* FIX: Override min-width for printing to ensure all columns fit */
             #timetable {
                 min-width: 100%;
-                table-layout: auto; /* Allow browser to manage column widths */
+                table-layout: auto;
             }
             th, td {
                 border: 1px solid #ddd;
-                padding: 2px; /* Reduced padding for more space */
-                font-size: 9px; /* Reduced font size for more space */
+                padding: 2px;
+                font-size: 8px; /* Further reduced font size */
                 word-break: break-word; 
             }
             th {
-                background-color: #f2f2f2;
+                background-color: #f2f2f2 !important; /* Ensure background prints */
             }
             .time-col {
                 width: auto; 
                 min-width: 0;
+                white-space: nowrap;
+            }
+            /* Ensure colored cells print their background */
+            #timetable div[style*="background-color"] {
+                background-color: inherit !important;
             }
         }
     </style>
