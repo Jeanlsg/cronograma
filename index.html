@@ -73,6 +73,14 @@
                 -webkit-print-color-adjust: exact !important;
                 color-adjust: exact !important;
             }
+            .printable-teacher {
+                display: none !important;
+            }
+            #print-legend {
+                display: block !important;
+                page-break-before: always;
+                padding: 2cm;
+            }
         }
     </style>
 </head>
@@ -175,6 +183,7 @@
         </div>
     </div>
 
+    <!-- Modal for selecting discipline -->
     <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
         <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white">
             <div class="mt-3 text-center">
@@ -190,6 +199,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Print Legend Section -->
+    <div id="print-legend" class="hidden"></div>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -255,11 +267,26 @@
                 }
             };
             
+            const renderPrintLegend = () => {
+                const legendContainer = document.getElementById('print-legend');
+                if (!legendContainer) return;
+                let legendHTML = '<h2 style="font-size: 24px; font-weight: bold; margin-bottom: 16px;">Legenda de Abreviações</h2><ul>';
+                const uniqueDisciplines = [...new Map(disciplines.map(item => [item.abbr, item])).values()];
+                uniqueDisciplines.forEach(d => {
+                    if (d.abbr && d.name) {
+                         legendHTML += `<li style="font-size: 16px; margin-bottom: 8px;"><strong style="font-weight: bold;">${d.abbr}:</strong> ${d.name}</li>`;
+                    }
+                });
+                legendHTML += '</ul>';
+                legendContainer.innerHTML = legendHTML;
+            };
+
             const fullRender = () => {
                 renderTimetable();
                 renderDisciplinesList();
                 renderColorPalette();
                 updatePaletteSelection(colorInput.value);
+                renderPrintLegend();
             };
 
             const renderTimetable = () => {
@@ -310,7 +337,7 @@
                     if (discipline) {
                         cell.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-xs font-semibold p-1 overflow-hidden" style="background-color: ${discipline.color};">
                             <span>${discipline.abbr}</span>
-                            <span class="text-[10px] font-normal hidden sm:block truncate">${discipline.teacher || ''}</span>
+                            <span class="text-[10px] font-normal hidden sm:block truncate printable-teacher">${discipline.teacher || ''}</span>
                             <span class="text-[10px] font-normal hidden sm:block text-zinc-600 truncate">${discipline.room || ''}</span>
                         </div>`;
                     }
@@ -488,8 +515,7 @@
                 
                 applyRecurringSchedule(newDiscipline);
                 saveData();
-                renderDisciplinesList();
-                renderTimetable();
+                fullRender();
                 resetForm();
             });
 
@@ -556,7 +582,7 @@
                         }
                     });
                     saveData();
-                    renderDisciplinesList();
+                    fullRender();
                 }
             };
 
@@ -604,9 +630,7 @@
                     localStorage.removeItem('timetable_data');
                     localStorage.removeItem('timetable_color_palette');
                     predefinedColors = [...defaultColors];
-                    renderTimetable();
-                    renderDisciplinesList();
-                    renderColorPalette();
+                    fullRender();
                     resetForm();
                 }
             });
@@ -614,9 +638,7 @@
             const init = () => {
                 loadData();
                 renderDayCheckboxes();
-                renderColorPalette();
-                renderTimetable();
-                renderDisciplinesList();
+                fullRender();
                 resetForm();
             };
 
