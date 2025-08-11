@@ -32,48 +32,61 @@
             border-radius: 8px;
             padding: 4px;
         }
-        /* Style for print */
+        
+        /* IMPRESSÃO: Início do bloco de estilos que são aplicados SOMENTE ao imprimir a página. */
         @media print {
+            /* IMPRESSÃO: Define a orientação da página como paisagem (deitada) e ajusta as margens. */
             @page {
-                size: A4 landscape; /* Suggest landscape for more horizontal space */
-                margin: 0.7cm; /* Reduce page margins */
+                size: A4 landscape; 
+                margin: 0cm;
             }
+            /* IMPRESSÃO: Ajusta o corpo da página, força a impressão das cores de fundo e aplica a escala. */
             body, html {
                 width: 100%;
                 height: auto;
-                -webkit-print-color-adjust: exact !important; /* Force colors to print in Chrome/Safari */
-                color-adjust: exact !important; /* Standard property for printing colors */
+                -webkit-print-color-adjust: exact !important; 
+                color-adjust: exact !important;
+                zoom: 85%; /* IMPRESSÃO: Aplica um zoom para ajustar o conteúdo na página. */
             }
+            /* IMPRESSÃO: Esconde elementos que não devem aparecer na impressão (como botões). */
             .no-print {
                 display: none;
             }
+            /* IMPRESSÃO: Garante que a tabela ocupe toda a largura da página. */
             table {
                 width: 100%;
-                border-collapse: collapse;A
+                border-collapse: collapse;
             }
+            /* IMPRESSÃO: Remove a largura mínima da tabela para que ela se ajuste à página. */
             #timetable {
                 min-width: 100%;
                 table-layout: auto;
             }
+            /* IMPRESSÃO: Estilos para as células da tabela, com fontes e preenchimento menores. */
             th, td {
                 border: 1px solid #ddd;
                 padding: 2px;
-                font-size: 8px; /* Further reduced font size */
+                font-size: 8px; 
                 word-break: break-word; 
             }
+            /* IMPRESSÃO: Garante que o fundo do cabeçalho seja impresso. */
             th {
-                background-color: #f2f2f2 !important; /* Ensure background prints */
+                background-color: #f2f2f2 !important;
             }
+            /* IMPRESSÃO: Ajusta a coluna de horário. */
             .time-col {
                 width: auto; 
                 min-width: 0;
                 white-space: nowrap;
             }
-            /* Ensure colored cells print their background */
+            /* IMPRESSÃO: Força que as cores de fundo das disciplinas sejam impressas. */
             #timetable div[style*="background-color"] {
-                background-color: inherit !important;
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
             }
         }
+        /* IMPRESSÃO: Fim do bloco de estilos de impressão. */
+
     </style>
 </head>
 <body class="antialiased text-gray-800">
@@ -627,7 +640,10 @@
                 }
             });
 
+            // IMPRESSÃO: Esta é a função que é chamada quando o botão "Imprimir Horário" é clicado.
             document.getElementById('print-btn').addEventListener('click', () => {
+                // O comando window.print() abre a caixa de diálogo de impressão do navegador.
+                // Os estilos definidos em '@media print' no CSS serão aplicados.
                 window.print();
             });
 
