@@ -35,17 +35,17 @@
         @media print {
             @page {
                 size: A4 landscape; 
-                margin: 0cm;
+                margin: 1cm;
             }
             body, html {
                 width: 100%;
                 height: auto;
                 -webkit-print-color-adjust: exact !important; 
                 color-adjust: exact !important;
-                zoom: 85%;
+                zoom: 80%;
             }
             .no-print {
-                display: none;
+                display: none !important;
             }
             table {
                 width: 100%;
@@ -53,7 +53,7 @@
             }
             #timetable {
                 min-width: 100%;
-                table-layout: auto;
+                table-layout: fixed;
             }
             th, td {
                 border: 1px solid #ddd;
@@ -73,208 +73,278 @@
                 -webkit-print-color-adjust: exact !important;
                 color-adjust: exact !important;
             }
-            .printable-teacher {
-                display: none !important;
-            }
             #print-legend {
                 display: block !important;
                 page-break-before: always;
-                padding: 2cm;
+                padding-top: 2cm;
             }
         }
     </style>
 </head>
 <body class="antialiased text-gray-800">
 
-    <!-- Main Container -->
-    <div class="container mx-auto p-4 md:p-8">
-        <header class="text-center mb-8 no-print">
-            <h1 class="text-3xl sm:text-4xl font-bold text-zinc-800">Meu Cronograma Semanal</h1>
-            <p class="text-zinc-500 mt-2">Clique em um horário para adicionar uma disciplina ou defina um horário recorrente abaixo.</p>
-        </header>
+    <!-- App Container -->
+    <div id="app-container">
+        <!-- Main Container -->
+        <div class="container mx-auto p-4 md:p-8">
+            <header class="text-center mb-8 no-print">
+                <h1 class="text-3xl sm:text-4xl font-bold text-zinc-800">Meu Cronograma Semanal</h1>
+                <p class="text-zinc-500 mt-2">Clique em um horário para adicionar uma atividade ou defina um horário recorrente abaixo.</p>
+            </header>
 
-        <!-- Timetable Section -->
-        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
-            <div id="timetable-wrapper" class="overflow-x-auto custom-scrollbar">
-                <table id="timetable" class="w-full border-collapse text-center">
-                    <thead class="bg-zinc-50"></thead>
-                    <tbody></tbody>
-                </table>
+            <!-- Timetable Section -->
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
+                <div id="timetable-wrapper" class="overflow-x-auto custom-scrollbar">
+                    <table id="timetable" class="w-full border-collapse text-center">
+                        <thead class="bg-zinc-50"></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Controls Section -->
+            <div class="grid grid-cols-2 md:grid-cols-4 justify-center items-center gap-4 mt-6 no-print">
+                 <button id="print-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                    Imprimir
+                </button>
+                 <button id="export-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                    Exportar Dados
+                </button>
+                 <button id="import-btn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                    Importar Dados
+                </button>
+                 <button id="clear-all-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                    Limpar Tudo
+                </button>
+                <input type="file" id="import-file-input" class="hidden" accept=".json">
+            </div>
+
+            <!-- Activities Management Section -->
+            <div class="mt-10 no-print">
+                <h2 class="text-2xl font-bold text-zinc-800 mb-4">Gerenciar Atividades</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <h3 id="form-title" class="text-xl font-semibold mb-4 text-zinc-700">Adicionar Nova Atividade</h3>
+                        <form id="activity-form" class="space-y-4">
+                            <input type="hidden" id="activity-id">
+                            <div>
+                                <label for="activity-name" class="block text-sm font-medium text-zinc-600">Nome da Atividade</label>
+                                <input type="text" id="activity-name" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm" required>
+                            </div>
+                            <div>
+                                <label for="activity-abbr" class="block text-sm font-medium text-zinc-600">Abreviação</label>
+                                <input type="text" id="activity-abbr" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm" required>
+                            </div>
+                            <div>
+                                <label for="activity-responsible" class="block text-sm font-medium text-zinc-600">Responsável</label>
+                                <input type="text" id="activity-responsible" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
+                            </div>
+                            <div>
+                                <label for="activity-location" class="block text-sm font-medium text-zinc-600">Local</label>
+                                <input type="text" id="activity-location" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
+                            </div>
+                             <div>
+                                <label for="activity-description" class="block text-sm font-medium text-zinc-600">Descrição Padrão (Opcional)</label>
+                                <textarea id="activity-description" rows="2" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm"></textarea>
+                            </div>
+                            <div>
+                                <label for="activity-color" class="block text-sm font-medium text-zinc-600">Cor</label>
+                                <input type="color" id="activity-color" value="#a7f3d0" class="mt-1 block w-full h-10 px-1 py-1 bg-white border border-zinc-300 rounded-md shadow-sm cursor-pointer">
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <label class="block text-sm font-medium text-zinc-600">Paleta de Cores</label>
+                                    <div>
+                                        <button type="button" id="edit-palette-btn" class="text-sm text-indigo-600 hover:text-indigo-800">Editar</button>
+                                        <button type="button" id="save-palette-btn" class="text-sm text-green-600 hover:text-green-800 hidden">Salvar</button>
+                                        <button type="button" id="reset-palette-btn" class="text-sm text-red-600 hover:text-red-800 ml-2 hidden">Resetar</button>
+                                    </div>
+                                </div>
+                                <div id="color-palette" class="flex flex-wrap gap-2 mt-2 p-1"></div>
+                            </div>
+                            <div class="border-t pt-4">
+                                <h4 class="text-md font-semibold text-zinc-700 mb-2">Horário Recorrente (Opcional)</h4>
+                                <div class="mb-3">
+                                    <label class="block text-sm font-medium text-zinc-600 mb-2">Dias da Semana</label>
+                                    <div id="schedule-days" class="flex flex-wrap gap-x-4 gap-y-2"></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="schedule-start-time" class="block text-sm font-medium text-zinc-600">Hora Início</label>
+                                        <input type="time" id="schedule-start-time" step="3600" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label for="schedule-end-time" class="block text-sm font-medium text-zinc-600">Hora Fim</label>
+                                        <input type="time" id="schedule-end-time" step="3600" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                                <button type="submit" id="save-activity-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">Adicionar/Atualizar Atividade</button>
+                                <button type="button" id="cancel-edit-btn" class="w-full flex justify-center py-2 px-4 border border-zinc-300 rounded-md shadow-sm text-sm font-medium text-zinc-700 bg-white hover:bg-zinc-50 hidden">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="activities-list-container" class="bg-white p-6 rounded-2xl shadow-lg">
+                         <h3 class="text-xl font-semibold mb-4 text-zinc-700">Minhas Atividades</h3>
+                         <div id="activities-list" class="space-y-3"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Controls Section -->
-        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6 no-print">
-             <button id="print-btn" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                Imprimir Horário
-            </button>
-             <button id="clear-all-btn" class="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                Limpar Tudo
-            </button>
-        </div>
-
-        <!-- Disciplines Management Section -->
-        <div class="mt-10 no-print">
-            <h2 class="text-2xl font-bold text-zinc-800 mb-4">Gerenciar Disciplinas</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-white p-6 rounded-2xl shadow-lg">
-                    <h3 id="form-title" class="text-xl font-semibold mb-4 text-zinc-700">Adicionar Nova Disciplina</h3>
-                    <form id="discipline-form" class="space-y-4">
-                        <input type="hidden" id="discipline-id">
+        <!-- Modal for selecting activity -->
+        <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+            <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Selecione a Atividade</h3>
+                    <div class="mt-2 px-7 py-3 space-y-3">
+                        <select id="modal-activity-select" class="w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm"></select>
                         <div>
-                            <label for="discipline-name" class="block text-sm font-medium text-zinc-600">Nome da Disciplina</label>
-                            <input type="text" id="discipline-name" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm" required>
+                            <label for="modal-description" class="block text-sm text-left font-medium text-zinc-600">Descrição Específica (Opcional)</label>
+                            <input type="text" id="modal-description" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
                         </div>
-                        <div>
-                            <label for="discipline-abbr" class="block text-sm font-medium text-zinc-600">Abreviação</label>
-                            <input type="text" id="discipline-abbr" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm" required>
-                        </div>
-                        <div>
-                            <label for="discipline-teacher" class="block text-sm font-medium text-zinc-600">Docente</label>
-                            <input type="text" id="discipline-teacher" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label for="discipline-room" class="block text-sm font-medium text-zinc-600">Sala/Local</label>
-                            <input type="text" id="discipline-room" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
-                        </div>
-                        <div>
-                            <label for="discipline-color" class="block text-sm font-medium text-zinc-600">Cor</label>
-                            <input type="color" id="discipline-color" value="#a7f3d0" class="mt-1 block w-full h-10 px-1 py-1 bg-white border border-zinc-300 rounded-md shadow-sm cursor-pointer">
-                        </div>
-                        <div>
-                            <div class="flex justify-between items-center mt-2">
-                                <label class="block text-sm font-medium text-zinc-600">Paleta de Cores</label>
-                                <div>
-                                    <button type="button" id="edit-palette-btn" class="text-sm text-indigo-600 hover:text-indigo-800">Editar</button>
-                                    <button type="button" id="save-palette-btn" class="text-sm text-green-600 hover:text-green-800 hidden">Salvar</button>
-                                    <button type="button" id="reset-palette-btn" class="text-sm text-red-600 hover:text-red-800 ml-2 hidden">Resetar</button>
-                                </div>
-                            </div>
-                            <div id="color-palette" class="flex flex-wrap gap-2 mt-2 p-1"></div>
-                        </div>
-                        <div class="border-t pt-4">
-                            <h4 class="text-md font-semibold text-zinc-700 mb-2">Horário Recorrente (Opcional)</h4>
-                            <div class="mb-3">
-                                <label class="block text-sm font-medium text-zinc-600 mb-2">Dias da Semana</label>
-                                <div id="schedule-days" class="flex flex-wrap gap-x-4 gap-y-2"></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label for="schedule-start-time" class="block text-sm font-medium text-zinc-600">Hora Início</label>
-                                    <input type="time" id="schedule-start-time" step="3600" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
-                                </div>
-                                <div>
-                                    <label for="schedule-end-time" class="block text-sm font-medium text-zinc-600">Hora Fim</label>
-                                    <input type="time" id="schedule-end-time" step="3600" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                            <button type="submit" id="save-discipline-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">Adicionar/Atualizar Disciplina</button>
-                            <button type="button" id="cancel-edit-btn" class="w-full flex justify-center py-2 px-4 border border-zinc-300 rounded-md shadow-sm text-sm font-medium text-zinc-700 bg-white hover:bg-zinc-50 hidden">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-                <div id="disciplines-list-container" class="bg-white p-6 rounded-2xl shadow-lg">
-                     <h3 class="text-xl font-semibold mb-4 text-zinc-700">Minhas Disciplinas</h3>
-                     <div id="disciplines-list" class="space-y-3"></div>
+                    </div>
+                    <div class="items-center px-4 py-3 gap-4 flex flex-col sm:flex-row">
+                        <button id="modal-save" class="w-full px-4 py-2 bg-green-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-600">Salvar</button>
+                        <button id="modal-clear" class="w-full px-4 py-2 bg-orange-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-orange-600">Limpar</button>
+                        <button id="modal-cancel" class="w-full px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-300">Cancelar</button>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirm-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-sm w-full">
+                <h3 id="confirm-modal-title" class="text-lg font-semibold text-zinc-800 mb-2">Confirmar Ação</h3>
+                <p id="confirm-modal-text" class="text-zinc-600 mb-4">Você tem certeza?</p>
+                <div class="flex justify-end gap-4">
+                    <button id="confirm-modal-no" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Não</button>
+                    <button id="confirm-modal-yes" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Sim</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Print Legend Section -->
+        <div id="print-legend" class="hidden"></div>
     </div>
-
-    <!-- Modal for selecting discipline -->
-    <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-        <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white">
-            <div class="mt-3 text-center">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">Selecione a Disciplina</h3>
-                <div class="mt-2 px-7 py-3">
-                    <select id="modal-discipline-select" class="w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm"></select>
-                </div>
-                <div class="items-center px-4 py-3 gap-4 flex flex-col sm:flex-row">
-                    <button id="modal-save" class="w-full px-4 py-2 bg-green-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-600">Salvar</button>
-                    <button id="modal-clear" class="w-full px-4 py-2 bg-orange-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-orange-600">Limpar</button>
-                    <button id="modal-cancel" class="w-full px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-300">Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Print Legend Section -->
-    <div id="print-legend" class="hidden"></div>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
             const timetable = document.getElementById('timetable');
             const modal = document.getElementById('modal');
-            const modalSelect = document.getElementById('modal-discipline-select');
-            const disciplineForm = document.getElementById('discipline-form');
-            const disciplinesList = document.getElementById('disciplines-list');
+            const modalSelect = document.getElementById('modal-activity-select');
+            const modalDescriptionInput = document.getElementById('modal-description');
+            const activityForm = document.getElementById('activity-form');
+            const activitiesList = document.getElementById('activities-list');
             const formTitle = document.getElementById('form-title');
-            const disciplineIdInput = document.getElementById('discipline-id');
+            const activityIdInput = document.getElementById('activity-id');
             const cancelEditBtn = document.getElementById('cancel-edit-btn');
             const scheduleDaysContainer = document.getElementById('schedule-days');
             const colorPalette = document.getElementById('color-palette');
-            const colorInput = document.getElementById('discipline-color');
+            const colorInput = document.getElementById('activity-color');
             const editPaletteBtn = document.getElementById('edit-palette-btn');
             const savePaletteBtn = document.getElementById('save-palette-btn');
             const resetPaletteBtn = document.getElementById('reset-palette-btn');
+            const confirmModal = document.getElementById('confirm-modal');
+            const importFileInput = document.getElementById('import-file-input');
 
-            let disciplines = [];
+            // App State
+            let activities = [];
             let timetableData = {};
             let currentCellId = null;
             let isEditingPalette = false;
 
+            // Constants
             const days = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-            const startTime = 5;
+            const startTime = 7;
             const endTime = 23;
             const defaultColors = ['#fecaca', '#fed7aa', '#fef08a', '#d9f99d', '#a7f3d0', '#bfdbfe', '#c7d2fe', '#e9d5ff', '#fbcfe8', '#fce7f3', '#e5e7eb', '#d1d5db'];
             let predefinedColors = [...defaultColors];
 
-            const defaultDisciplines = [
-                { id: 1, name: 'Lógica para computação', abbr: 'LC', teacher: 'ROSALVO NETO', room: 'sala 06', color: '#a7f3d0' },
-                { id: 2, name: 'Algoritmo e estrutura de dados', abbr: 'AED', teacher: 'Linder', room: '', color: '#bfdbfe' },
-                { id: 3, name: 'Eletrônica digital', abbr: 'ED', teacher: 'Max', room: '', color: '#fbcfe8' },
-                { id: 4, name: 'Laboratório de eletrônica Digital', abbr: 'LabED', teacher: 'Max', room: '', color: '#fef08a' },
-                { id: 5, name: 'Dormir', abbr: 'DORMIR', teacher: '', room: '', color: '#e5e7eb' },
+            const defaultActivities = [
+                { id: 1, name: 'Trabalho', abbr: 'Job', responsible: 'Chefe', location: 'Escritório', color: '#c7d2fe', description: 'Reunião de equipe' },
+                { id: 2, name: 'Estudar', abbr: 'Estudo', responsible: 'Eu', location: 'Biblioteca', color: '#fed7aa', description: 'Revisar matéria' },
+                { id: 3, name: 'Academia', abbr: 'Gym', responsible: 'Personal', location: 'SmartFit', color: '#fecaca', description: 'Treino de pernas' },
+                { id: 4, name: 'Almoço', abbr: 'Almoço', responsible: '', location: 'Restaurante', color: '#d9f99d', description: '' },
+                { id: 5, name: 'Jantar', abbr: 'Jantar', responsible: 'Eu', location: 'Casa', color: '#e9d5ff', description: '' },
+                { id: 6, name: 'Projeto Pessoal', abbr: 'Proj.', responsible: 'Eu', location: 'Casa', color: '#a7f3d0', description: 'Codificar app' },
+                { id: 7, name: 'Descansar', abbr: 'Zzz', responsible: '', location: 'Casa', color: '#e5e7eb', description: 'Assistir série' },
             ];
+            
+            const defaultTimetableData = {
+                // Generic Schedule
+                'Seg-08:00': { activityId: 1, description: 'Reunião de alinhamento' }, 'Seg-09:00': { activityId: 1, description: '' }, 'Seg-10:00': { activityId: 1, description: '' }, 'Seg-11:00': { activityId: 1, description: '' },
+                'Ter-08:00': { activityId: 1, description: '' }, 'Ter-09:00': { activityId: 1, description: '' }, 'Ter-10:00': { activityId: 1, description: '' }, 'Ter-11:00': { activityId: 1, description: '' },
+                'Qua-08:00': { activityId: 1, description: '' }, 'Qua-09:00': { activityId: 1, description: '' }, 'Qua-10:00': { activityId: 1, description: '' }, 'Qua-11:00': { activityId: 1, description: '' },
+                'Qui-08:00': { activityId: 1, description: '' }, 'Qui-09:00': { activityId: 1, description: '' }, 'Qui-10:00': { activityId: 1, description: '' }, 'Qui-11:00': { activityId: 1, description: '' },
+                'Sex-08:00': { activityId: 1, description: '' }, 'Sex-09:00': { activityId: 1, description: '' }, 'Sex-10:00': { activityId: 1, description: '' }, 'Sex-11:00': { activityId: 1, description: '' },
 
+                'Seg-12:00': { activityId: 4, description: '' }, 'Ter-12:00': { activityId: 4, description: '' }, 'Qua-12:00': { activityId: 4, description: '' }, 'Qui-12:00': { activityId: 4, description: '' }, 'Sex-12:00': { activityId: 4, description: '' },
+                'Seg-19:00': { activityId: 5, description: 'Cuscuz' },
+                'Ter-19:00': { activityId: 5, description: 'Sopa' },
+                'Qua-19:00': { activityId: 5, description: 'Macarronada' },
+                'Qui-19:00': { activityId: 5, description: 'Salada' },
+                'Sex-19:00': { activityId: 5, description: 'Pizza' },
+                'Seg-18:00': { activityId: 3, description: 'Peito e Tríceps' }, 'Qua-18:00': { activityId: 3, description: 'Costas e Bíceps' }, 'Sex-18:00': { activityId: 3, description: 'Pernas' },
+                'Ter-20:00': { activityId: 2, description: 'Inglês' }, 'Qui-20:00': { activityId: 2, description: 'Espanhol' },
+                'Sáb-14:00': { activityId: 6, description: '' }, 'Sáb-15:00': { activityId: 6, description: '' },
+                'Dom-16:00': { activityId: 7, description: 'Filme novo' },
+            };
+
+            // --- CONFIRMATION MODAL ---
+            const showConfirm = (title, text, onYes) => {
+                document.getElementById('confirm-modal-title').textContent = title;
+                document.getElementById('confirm-modal-text').textContent = text;
+                confirmModal.classList.remove('hidden');
+
+                const yesBtn = document.getElementById('confirm-modal-yes');
+                const noBtn = document.getElementById('confirm-modal-no');
+
+                const handleYes = () => {
+                    onYes();
+                    cleanup();
+                };
+
+                const cleanup = () => {
+                    confirmModal.classList.add('hidden');
+                    yesBtn.removeEventListener('click', handleYes);
+                    noBtn.removeEventListener('click', cleanup);
+                };
+
+                yesBtn.addEventListener('click', handleYes, { once: true });
+                noBtn.addEventListener('click', cleanup, { once: true });
+            };
+
+            // --- DATA PERSISTENCE (LocalStorage) ---
             const saveData = () => {
-                localStorage.setItem('timetable_disciplines', JSON.stringify(disciplines));
+                localStorage.setItem('timetable_disciplines', JSON.stringify(activities));
                 localStorage.setItem('timetable_data', JSON.stringify(timetableData));
                 localStorage.setItem('timetable_color_palette', JSON.stringify(predefinedColors));
             };
 
             const loadData = () => {
-                const storedDisciplines = localStorage.getItem('timetable_disciplines');
+                const storedActivities = localStorage.getItem('timetable_disciplines');
                 const storedTimetableData = localStorage.getItem('timetable_data');
                 const storedPalette = localStorage.getItem('timetable_color_palette');
 
-                if (storedDisciplines) {
-                    disciplines = JSON.parse(storedDisciplines);
-                } else {
-                    disciplines = defaultDisciplines;
-                }
-                
-                if (storedTimetableData) {
-                    timetableData = JSON.parse(storedTimetableData);
-                }
-
-                if (storedPalette) {
-                    predefinedColors = JSON.parse(storedPalette);
-                } else {
-                    predefinedColors = [...defaultColors];
-                }
+                activities = storedActivities ? JSON.parse(storedActivities) : defaultActivities;
+                timetableData = storedTimetableData ? JSON.parse(storedTimetableData) : defaultTimetableData;
+                predefinedColors = storedPalette ? JSON.parse(storedPalette) : [...defaultColors];
             };
-            
+
+            // --- RENDER FUNCTIONS ---
             const renderPrintLegend = () => {
                 const legendContainer = document.getElementById('print-legend');
                 if (!legendContainer) return;
                 let legendHTML = '<h2 style="font-size: 24px; font-weight: bold; margin-bottom: 16px;">Legenda de Abreviações</h2><ul>';
-                const uniqueDisciplines = [...new Map(disciplines.map(item => [item.abbr, item])).values()];
-                uniqueDisciplines.forEach(d => {
+                const uniqueActivities = [...new Map(activities.map(item => [item.abbr, item])).values()];
+                uniqueActivities.forEach(d => {
                     if (d.abbr && d.name) {
-                         legendHTML += `<li style="font-size: 16px; margin-bottom: 8px;"><strong style="font-weight: bold;">${d.abbr}:</strong> ${d.name}</li>`;
+                        const locationInfo = d.location ? ` - ${d.location}` : '';
+                         legendHTML += `<li style="font-size: 16px; margin-bottom: 8px;"><strong style="font-weight: bold;">${d.abbr}:</strong> ${d.name}${locationInfo}</li>`;
                     }
                 });
                 legendHTML += '</ul>';
@@ -283,7 +353,7 @@
 
             const fullRender = () => {
                 renderTimetable();
-                renderDisciplinesList();
+                renderActivitiesList();
                 renderColorPalette();
                 updatePaletteSelection(colorInput.value);
                 renderPrintLegend();
@@ -331,52 +401,58 @@
             const updateCell = (cellId) => {
                 const cell = document.getElementById(cellId);
                 if (!cell) return;
-                const disciplineId = timetableData[cellId];
-                if (disciplineId) {
-                    const discipline = disciplines.find(d => d.id == disciplineId);
-                    if (discipline) {
-                        cell.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-xs font-semibold p-1 overflow-hidden" style="background-color: ${discipline.color};">
-                            <span>${discipline.abbr}</span>                            
-                            <span class="text-[10px] font-normal hidden sm:block text-zinc-600 truncate">${discipline.room || ''}</span>
+                const entry = timetableData[cellId];
+                if (entry && entry.activityId) {
+                    const activity = activities.find(d => d.id == entry.activityId);
+                    if (activity) {
+                        // Use specific description if available, otherwise fallback to activity's default description
+                        const description = entry.description || activity.description || '';
+                        cell.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-xs font-semibold p-1 overflow-hidden" style="background-color: ${activity.color};">
+                            <span>${activity.abbr}</span>                               
+                            <span class="text-[10px] font-normal text-zinc-600 truncate">${description}</span>
                         </div>`;
+                    } else {
+                        // Data inconsistency, clear the cell
+                        delete timetableData[cellId];
+                        cell.innerHTML = '';
                     }
                 } else {
                     cell.innerHTML = '';
-                    cell.style.backgroundColor = '';
                 }
             };
 
-            const renderDisciplinesList = () => {
-                disciplinesList.innerHTML = '';
-                if(disciplines.length === 0) {
-                    disciplinesList.innerHTML = `<p class="text-zinc-500">Nenhuma disciplina adicionada ainda.</p>`;
+            const renderActivitiesList = () => {
+                activitiesList.innerHTML = '';
+                if(activities.length === 0) {
+                    activitiesList.innerHTML = `<p class="text-zinc-500">Nenhuma atividade adicionada ainda.</p>`;
                     return;
                 }
-                disciplines.forEach(d => {
+                activities.forEach(d => {
                     const div = document.createElement('div');
                     div.className = 'flex items-center justify-between p-3 rounded-lg border border-zinc-200';
                     div.innerHTML = `
                         <div class="flex items-center gap-3">
                             <div class="w-5 h-5 rounded-full" style="background-color: ${d.color};"></div>
-                            <div>
-                                <p class="font-semibold">${d.name} (${d.abbr})</p>
-                                <p class="text-sm text-zinc-500">${d.teacher || 'Sem docente'} - ${d.room || 'Sem sala'}</p>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-semibold truncate">${d.name} (${d.abbr})</p>
+                                <p class="text-sm text-zinc-500 truncate">${d.responsible || 'Sem responsável'} - ${d.location || 'Sem local'}</p>
+                                ${d.description ? `<p class="text-xs text-zinc-400 truncate">Padrão: ${d.description}</p>` : ''}
                             </div>
                         </div>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 flex-shrink-0 ml-2">
                             <button data-id="${d.id}" class="edit-btn text-blue-500 hover:text-blue-700">Editar</button>
                             <button data-id="${d.id}" class="delete-btn text-red-500 hover:text-red-700">Excluir</button>
                         </div>
                     `;
-                    disciplinesList.appendChild(div);
+                    activitiesList.appendChild(div);
                 });
-                document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', onEditDiscipline));
-                document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', onDeleteDiscipline));
+                document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', onEditActivity));
+                document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', onDeleteActivity));
             };
             
             const populateModalSelect = () => {
                 modalSelect.innerHTML = '<option value="">-- Limpar Célula --</option>';
-                disciplines.forEach(d => {
+                activities.forEach(d => {
                     const option = document.createElement('option');
                     option.value = d.id;
                     option.textContent = `${d.name} (${d.abbr})`;
@@ -422,6 +498,7 @@
                 });
             };
 
+            // --- EVENT HANDLERS ---
             const onSwatchClick = (e) => {
                 const swatch = e.target;
                 const selectedColor = swatch.dataset.color;
@@ -456,8 +533,14 @@
             const onCellClick = (cellId) => {
                 currentCellId = cellId;
                 populateModalSelect();
-                const currentDisciplineId = timetableData[cellId];
-                modalSelect.value = currentDisciplineId || '';
+                const entry = timetableData[cellId];
+                if (entry) {
+                    modalSelect.value = entry.activityId;
+                    modalDescriptionInput.value = entry.description || '';
+                } else {
+                    modalSelect.value = '';
+                    modalDescriptionInput.value = '';
+                }
                 modal.classList.remove('hidden');
             };
 
@@ -469,8 +552,13 @@
             document.getElementById('modal-save').addEventListener('click', () => {
                 if (currentCellId) {
                     const selectedId = modalSelect.value;
+                    const specificDescription = modalDescriptionInput.value;
                     if (selectedId) {
-                        timetableData[currentCellId] = selectedId;
+                        const activity = activities.find(a => a.id == selectedId);
+                        timetableData[currentCellId] = { 
+                            activityId: selectedId, 
+                            description: specificDescription || activity.description || ''
+                        };
                     } else {
                         delete timetableData[currentCellId];
                     }
@@ -491,35 +579,41 @@
 
             document.getElementById('modal-cancel').addEventListener('click', closeModal);
 
-            disciplineForm.addEventListener('submit', (e) => {
+            activityForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const id = disciplineIdInput.value;
-                const newDiscipline = {
+                const id = activityIdInput.value;
+                
+                const scheduleDays = Array.from(document.querySelectorAll('[name="schedule-day"]:checked')).map(cb => cb.value);
+                const scheduleStartTime = document.getElementById('schedule-start-time').value;
+                const scheduleEndTime = document.getElementById('schedule-end-time').value;
+
+                const newActivity = {
                     id: id ? parseInt(id) : Date.now(),
-                    name: document.getElementById('discipline-name').value,
-                    abbr: document.getElementById('discipline-abbr').value,
-                    teacher: document.getElementById('discipline-teacher').value,
-                    room: document.getElementById('discipline-room').value,
+                    name: document.getElementById('activity-name').value,
+                    abbr: document.getElementById('activity-abbr').value,
+                    responsible: document.getElementById('activity-responsible').value,
+                    location: document.getElementById('activity-location').value,
+                    description: document.getElementById('activity-description').value,
                     color: colorInput.value,
-                    scheduleDays: Array.from(document.querySelectorAll('[name="schedule-day"]:checked')).map(cb => cb.value),
-                    scheduleStartTime: document.getElementById('schedule-start-time').value,
-                    scheduleEndTime: document.getElementById('schedule-end-time').value
+                    scheduleDays: scheduleDays,
+                    scheduleStartTime: scheduleStartTime,
+                    scheduleEndTime: scheduleEndTime
                 };
 
                 if (id) {
-                    disciplines = disciplines.map(d => d.id == id ? newDiscipline : d);
+                    activities = activities.map(d => d.id == id ? newActivity : d);
                 } else {
-                    disciplines.push(newDiscipline);
+                    activities.push(newActivity);
                 }
                 
-                applyRecurringSchedule(newDiscipline);
+                applyRecurringSchedule(newActivity);
                 saveData();
                 fullRender();
                 resetForm();
             });
 
-            const applyRecurringSchedule = (discipline) => {
-                const { id, scheduleDays, scheduleStartTime, scheduleEndTime } = discipline;
+            const applyRecurringSchedule = (activity) => {
+                const { id, scheduleDays, scheduleStartTime, scheduleEndTime } = activity;
 
                 if (scheduleDays && scheduleDays.length > 0 && scheduleStartTime && scheduleEndTime) {
                     const startHour = parseInt(scheduleStartTime.split(':')[0]);
@@ -529,67 +623,64 @@
                         const timeStr = `${String(hour).padStart(2, '0')}:00`;
                         scheduleDays.forEach(day => {
                             const cellId = `${day}-${timeStr}`;
-                            timetableData[cellId] = id;
+                            timetableData[cellId] = {
+                                activityId: activity.id,
+                                description: activity.description || ''
+                            };
                         });
                     }
                 }
             };
 
-            const onEditDiscipline = (e) => {
+            const onEditActivity = (e) => {
                 const id = e.target.dataset.id;
-                const discipline = disciplines.find(d => d.id == id);
-                if (discipline) {
-                    formTitle.textContent = 'Editar Disciplina';
-                    disciplineIdInput.value = discipline.id;
-                    document.getElementById('discipline-name').value = discipline.name;
-                    document.getElementById('discipline-abbr').value = discipline.abbr;
-                    document.getElementById('discipline-teacher').value = discipline.teacher;
-                    document.getElementById('discipline-room').value = discipline.room;
-                    colorInput.value = discipline.color;
-                    updatePaletteSelection(discipline.color);
+                const activity = activities.find(d => d.id == id);
+                if (activity) {
+                    formTitle.textContent = 'Editar Atividade';
+                    activityIdInput.value = activity.id;
+                    document.getElementById('activity-name').value = activity.name;
+                    document.getElementById('activity-abbr').value = activity.abbr;
+                    document.getElementById('activity-responsible').value = activity.responsible;
+                    document.getElementById('activity-location').value = activity.location;
+                    document.getElementById('activity-description').value = activity.description;
+                    colorInput.value = activity.color;
+                    updatePaletteSelection(activity.color);
                     
                     document.querySelectorAll('[name="schedule-day"]').forEach(cb => cb.checked = false);
-                    document.getElementById('schedule-start-time').value = '';
-                    document.getElementById('schedule-end-time').value = '';
                     
-                    if (discipline.scheduleDays) {
-                        discipline.scheduleDays.forEach(day => {
+                    if (activity.scheduleDays) {
+                        activity.scheduleDays.forEach(day => {
                             const checkbox = document.getElementById(`day-${day}`);
                             if (checkbox) checkbox.checked = true;
                         });
                     }
-                    if (discipline.scheduleStartTime) {
-                        document.getElementById('schedule-start-time').value = discipline.scheduleStartTime;
-                    }
-                    if (discipline.scheduleEndTime) {
-                        document.getElementById('schedule-end-time').value = discipline.scheduleEndTime;
-                    }
+                    document.getElementById('schedule-start-time').value = activity.scheduleStartTime || '';
+                    document.getElementById('schedule-end-time').value = activity.scheduleEndTime || '';
 
                     cancelEditBtn.classList.remove('hidden');
-                    window.scrollTo({ top: document.getElementById('discipline-form').offsetTop, behavior: 'smooth' });
+                    window.scrollTo({ top: document.getElementById('activity-form').offsetTop, behavior: 'smooth' });
                 }
             };
 
-            const onDeleteDiscipline = (e) => {
-                const id = e.target.dataset.id;
-                if (confirm('Tem certeza que deseja excluir esta disciplina? Isso também a removerá do cronograma.')) {
-                    disciplines = disciplines.filter(d => d.id != id);
+            const onDeleteActivity = (e) => {
+                const idToDelete = e.target.dataset.id;
+                showConfirm('Excluir Atividade', 'Tem certeza que deseja excluir esta atividade? Isso também a removerá de todo o cronograma.', () => {
+                    activities = activities.filter(d => d.id != idToDelete);
                     Object.keys(timetableData).forEach(cellId => {
-                        if (timetableData[cellId] == id) {
+                        if (timetableData[cellId].activityId == idToDelete) {
                             delete timetableData[cellId];
-                            updateCell(cellId);
                         }
                     });
                     saveData();
                     fullRender();
-                }
+                });
             };
 
             const resetForm = () => {
-                disciplineForm.reset();
+                activityForm.reset();
                 document.querySelectorAll('[name="schedule-day"]:checked').forEach(cb => cb.checked = false);
-                disciplineIdInput.value = '';
-                formTitle.textContent = 'Adicionar Nova Disciplina';
+                activityIdInput.value = '';
+                formTitle.textContent = 'Adicionar Nova Atividade';
                 cancelEditBtn.classList.add('hidden');
                 const randomColor = predefinedColors[Math.floor(Math.random() * predefinedColors.length)];
                 colorInput.value = randomColor;
@@ -597,6 +688,7 @@
             };
             
             cancelEditBtn.addEventListener('click', resetForm);
+            
             editPaletteBtn.addEventListener('click', () => {
                 isEditingPalette = true;
                 editPaletteBtn.classList.add('hidden');
@@ -604,6 +696,7 @@
                 resetPaletteBtn.classList.remove('hidden');
                 colorPalette.classList.add('palette-editing');
             });
+
             savePaletteBtn.addEventListener('click', () => {
                 isEditingPalette = false;
                 editPaletteBtn.classList.remove('hidden');
@@ -612,28 +705,80 @@
                 colorPalette.classList.remove('palette-editing');
                 saveData();
             });
+
             resetPaletteBtn.addEventListener('click', () => {
-                if (confirm('Tem certeza que deseja resetar a paleta para as cores padrão?')) {
+                showConfirm('Resetar Paleta', 'Tem certeza que deseja resetar a paleta para as cores padrão?', () => {
                     predefinedColors = [...defaultColors];
-                    renderColorPalette();
                     saveData();
-                }
+                    fullRender();
+                });
             });
+
             document.getElementById('print-btn').addEventListener('click', () => window.print());
             
             document.getElementById('clear-all-btn').addEventListener('click', () => {
-                if (confirm('Tem certeza que deseja limpar todo o cronograma e todas as disciplinas? Esta ação não pode ser desfeita.')) {
-                    disciplines = [];
+                showConfirm('Limpar Tudo', 'Tem certeza que deseja limpar todo o cronograma e todas as atividades? Esta ação não pode ser desfeita.', () => {
+                    activities = [];
                     timetableData = {};
-                    localStorage.removeItem('timetable_disciplines');
-                    localStorage.removeItem('timetable_data');
-                    localStorage.removeItem('timetable_color_palette');
                     predefinedColors = [...defaultColors];
+                    saveData();
                     fullRender();
                     resetForm();
-                }
+                });
             });
 
+            // --- IMPORT/EXPORT HANDLERS ---
+            document.getElementById('export-btn').addEventListener('click', () => {
+                const dataToExport = {
+                    activities,
+                    timetableData,
+                    predefinedColors
+                };
+                const dataStr = JSON.stringify(dataToExport, null, 2);
+                const dataBlob = new Blob([dataStr], {type: "application/json"});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.download = 'cronograma-backup.json';
+                link.href = url;
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+
+            document.getElementById('import-btn').addEventListener('click', () => {
+                importFileInput.click();
+            });
+
+            importFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (importedData.activities && importedData.timetableData && importedData.predefinedColors) {
+                             showConfirm('Importar Dados', 'Isso substituirá seu cronograma atual. Deseja continuar?', () => {
+                                activities = importedData.activities;
+                                timetableData = importedData.timetableData;
+                                predefinedColors = importedData.predefinedColors;
+                                saveData();
+                                fullRender();
+                            });
+                        } else {
+                            alert('Arquivo de importação inválido. A estrutura dos dados está incorreta.');
+                        }
+                    } catch (error) {
+                        console.error("Error parsing imported file:", error);
+                        alert('Não foi possível ler o arquivo. Verifique se é um arquivo JSON válido.');
+                    } finally {
+                        importFileInput.value = '';
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+
+            // --- INITIALIZATION ---
             const init = () => {
                 loadData();
                 renderDayCheckboxes();
