@@ -105,14 +105,19 @@
                     const card = document.createElement('div');
                     card.className = 'bg-white p-5 rounded-xl shadow-md';
                     card.innerHTML = `
-                        <div class="flex flex-col sm:flex-row justify-between sm:items-center">
-                            <div>
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-start">
+                            <div class="flex-1">
                                 <h3 class="text-lg font-bold text-zinc-800">${activity.name} (${activity.abbr})</h3>
                                 <p class="text-sm text-zinc-500">${activity.location || 'Sem local'}</p>
                             </div>
-                            <div class="mt-4 sm:mt-0 flex items-center gap-2">
-                                <label for="max-absences-${activity.id}" class="text-sm font-medium">Limite de Faltas:</label>
-                                <input type="number" id="max-absences-${activity.id}" value="${activityAbsences.max}" min="0" class="w-20 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <div class="mt-4 sm:mt-0 flex items-center gap-4">
+                                <div class="flex items-center gap-2">
+                                    <label for="max-absences-${activity.id}" class="text-sm font-medium">Limite:</label>
+                                    <input type="number" id="max-absences-${activity.id}" value="${activityAbsences.max}" min="0" class="w-20 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                </div>
+                                <button data-id="${activity.id}" class="delete-activity-btn text-gray-400 hover:text-red-600 p-1 rounded-full transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                </button>
                             </div>
                         </div>
 
@@ -216,6 +221,14 @@
                     absenceData[id].current = Math.min(absenceData[id].current + 1, absenceData[id].max);
                 } else if (button.classList.contains('remove-absence-btn')) {
                     absenceData[id].current = Math.max(absenceData[id].current - 1, 0);
+                } else if (button.classList.contains('delete-activity-btn')) {
+                    if (confirm(`Tem certeza que deseja excluir a atividade "${activities.find(a => a.id == id)?.name}" da contagem de faltas?`)) {
+                        activities = activities.filter(a => a.id != id);
+                        delete absenceData[id];
+                        saveData();
+                        renderTrackers();
+                    }
+                    return; // Prevent progress bar update for deletion
                 }
                 saveData();
                 updateProgressBar(id);
