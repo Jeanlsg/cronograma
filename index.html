@@ -9,22 +9,22 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f4f5; /* zinc-100 */
+            background-color: #f8fafc; /* slate-50 */
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #f1f5f9; /* slate-100 */
             border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #a8a29e; /* stone-400 */
+            background: #94a3b8; /* slate-400 */
             border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #78716c; /* stone-500 */
+            background: #64748b; /* slate-500 */
         }
         .palette-editing {
             outline: 2px dashed #4f46e5; /* indigo-600 */
@@ -40,6 +40,7 @@
             body, html {
                 width: 100%;
                 height: auto;
+                background-color: #ffffff !important;
                 -webkit-print-color-adjust: exact !important; 
                 color-adjust: exact !important;
                 zoom: 80%;
@@ -56,7 +57,7 @@
                 table-layout: fixed;
             }
             th, td {
-                border: 1px solid #ddd;
+                border: 1px solid #ddd !important;
                 padding: 2px;
                 font-size: 8px; 
                 word-break: break-word; 
@@ -86,107 +87,120 @@
     <!-- App Container -->
     <div id="app-container">
         <!-- Main Container -->
-        <div class="container mx-auto p-4 md:p-8">
+        <div class="container mx-auto p-4 sm:p-6 lg:p-8">
             <header class="text-center mb-8 no-print">
-                <h1 class="text-3xl sm:text-4xl font-bold text-zinc-800">Meu Cronograma Semanal</h1>
-                <p class="text-zinc-500 mt-2">Clique em um horário para adicionar uma atividade ou defina um horário recorrente abaixo.</p>
+                <h1 class="text-4xl sm:text-5xl font-bold text-gray-800">Meu Cronograma Semanal</h1>
+                <p class="text-gray-500 mt-2 text-lg">Organize suas atividades de forma simples e visual.</p>
             </header>
+
+             <!-- Controls Section -->
+            <div class="bg-white p-4 rounded-2xl shadow-lg no-print mb-8">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <button id="print-btn" class="flex items-center justify-center gap-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v6a2 2 0 002 2h1v-4a1 1 0 011-1h8a1 1 0 011 1v4h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm-6 8a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg>
+                        <span>Imprimir</span>
+                    </button>
+                    <button id="export-btn" class="flex items-center justify-center gap-2 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        <span>Exportar</span>
+                    </button>
+                    <button id="import-btn" class="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                        <span>Importar</span>
+                    </button>
+                    <button id="clear-all-btn" class="flex items-center justify-center gap-2 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                        <span>Limpar Tudo</span>
+                    </button>
+                    <a href="./compcrono.html" class="flex items-center justify-center gap-2 w-full text-center bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" /></svg>
+                        <span>Comparar</span>
+                    </a>
+                    <a href="./contfaltas.html" class="flex items-center justify-center gap-2 w-full text-center bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" /></svg>
+                        <span>Faltas</span>
+                    </a>
+                    <input type="file" id="import-file-input" class="hidden" accept=".json">
+                </div>
+            </div>
 
             <!-- Timetable Section -->
             <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
                 <div id="timetable-wrapper" class="overflow-x-auto custom-scrollbar">
                     <table id="timetable" class="w-full border-collapse text-center">
-                        <thead class="bg-zinc-50"></thead>
+                        <thead class="bg-gray-50"></thead>
                         <tbody></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Controls Section -->
-            <div class="grid grid-cols-2 md:grid-cols-5 justify-center items-center gap-4 mt-6 no-print">
-                 <button id="print-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                    Imprimir
-                </button>
-                 <button id="export-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                    Exportar Dados
-                </button>
-                 <button id="import-btn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                    Importar Dados
-                </button>                 
-                 <button id="clear-all-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 col-span-2 md:col-span-1">
-                    Limpar Tudo
-                </button>
-                <input type="file" id="import-file-input" class="hidden" accept=".json">
-            </div>
-
             <!-- Activities Management Section -->
             <div class="mt-10 no-print">
-                <h2 class="text-2xl font-bold text-zinc-800 mb-4">Gerenciar Atividades</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
-                        <h3 id="form-title" class="text-xl font-semibold mb-4 text-zinc-700">Adicionar Nova Atividade</h3>
+                        <h3 id="form-title" class="text-xl font-semibold mb-4 text-gray-700">Adicionar Nova Atividade</h3>
                         <form id="activity-form" class="space-y-4">
                             <input type="hidden" id="activity-id">
                             <div>
-                                <label for="activity-name" class="block text-sm font-medium text-zinc-600">Nome da Atividade</label>
-                                <input type="text" id="activity-name" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm" required>
+                                <label for="activity-name" class="block text-sm font-medium text-gray-600">Nome da Atividade</label>
+                                <input type="text" id="activity-name" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
                             </div>
                             <div>
-                                <label for="activity-abbr" class="block text-sm font-medium text-zinc-600">Abreviação</label>
-                                <input type="text" id="activity-abbr" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm" required>
+                                <label for="activity-abbr" class="block text-sm font-medium text-gray-600">Abreviação</label>
+                                <input type="text" id="activity-abbr" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
                             </div>
                             <div>
-                                <label for="activity-responsible" class="block text-sm font-medium text-zinc-600">Responsável</label>
-                                <input type="text" id="activity-responsible" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
+                                <label for="activity-responsible" class="block text-sm font-medium text-gray-600">Responsável</label>
+                                <input type="text" id="activity-responsible" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             </div>
                             <div>
-                                <label for="activity-location" class="block text-sm font-medium text-zinc-600">Local</label>
-                                <input type="text" id="activity-location" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
+                                <label for="activity-location" class="block text-sm font-medium text-gray-600">Local</label>
+                                <input type="text" id="activity-location" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             </div>
                              <div>
-                                <label for="activity-description" class="block text-sm font-medium text-zinc-600">Descrição Padrão (Opcional)</label>
-                                <textarea id="activity-description" rows="2" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm"></textarea>
+                                <label for="activity-description" class="block text-sm font-medium text-gray-600">Descrição Padrão (Opcional)</label>
+                                <textarea id="activity-description" rows="2" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
                             </div>
                             <div>
-                                <label for="activity-color" class="block text-sm font-medium text-zinc-600">Cor</label>
-                                <input type="color" id="activity-color" value="#a7f3d0" class="mt-1 block w-full h-10 px-1 py-1 bg-white border border-zinc-300 rounded-md shadow-sm cursor-pointer">
+                                <label for="activity-color" class="block text-sm font-medium text-gray-600">Cor</label>
+                                <input type="color" id="activity-color" value="#a7f3d0" class="mt-1 block w-full h-10 px-1 py-1 bg-white border border-gray-300 rounded-md shadow-sm cursor-pointer">
                             </div>
                             <div>
                                 <div class="flex justify-between items-center mt-2">
-                                    <label class="block text-sm font-medium text-zinc-600">Paleta de Cores</label>
+                                    <label class="block text-sm font-medium text-gray-600">Paleta de Cores</label>
                                     <div>
-                                        <button type="button" id="edit-palette-btn" class="text-sm text-indigo-600 hover:text-indigo-800">Editar</button>
-                                        <button type="button" id="save-palette-btn" class="text-sm text-green-600 hover:text-green-800 hidden">Salvar</button>
-                                        <button type="button" id="reset-palette-btn" class="text-sm text-red-600 hover:text-red-800 ml-2 hidden">Resetar</button>
+                                        <button type="button" id="edit-palette-btn" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800">Editar</button>
+                                        <button type="button" id="save-palette-btn" class="text-sm font-semibold text-green-600 hover:text-green-800 hidden">Salvar</button>
+                                        <button type="button" id="reset-palette-btn" class="text-sm font-semibold text-red-600 hover:text-red-800 ml-2 hidden">Resetar</button>
                                     </div>
                                 </div>
                                 <div id="color-palette" class="flex flex-wrap gap-2 mt-2 p-1"></div>
                             </div>
                             <div class="border-t pt-4">
-                                <h4 class="text-md font-semibold text-zinc-700 mb-2">Horário Recorrente (Opcional)</h4>
+                                <h4 class="text-md font-semibold text-gray-700 mb-2">Horário Recorrente (Opcional)</h4>
                                 <div class="mb-3">
-                                    <label class="block text-sm font-medium text-zinc-600 mb-2">Dias da Semana</label>
+                                    <label class="block text-sm font-medium text-gray-600 mb-2">Dias da Semana</label>
                                     <div id="schedule-days" class="flex flex-wrap gap-x-4 gap-y-2"></div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label for="schedule-start-time" class="block text-sm font-medium text-zinc-600">Hora Início</label>
-                                        <input type="time" id="schedule-start-time" step="3600" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
+                                        <label for="schedule-start-time" class="block text-sm font-medium text-gray-600">Hora Início</label>
+                                        <input type="time" id="schedule-start-time" step="3600" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     </div>
                                     <div>
-                                        <label for="schedule-end-time" class="block text-sm font-medium text-zinc-600">Hora Fim</label>
-                                        <input type="time" id="schedule-end-time" step="3600" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
+                                        <label for="schedule-end-time" class="block text-sm font-medium text-gray-600">Hora Fim</label>
+                                        <input type="time" id="schedule-end-time" step="3600" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     </div>
                                 </div>
                             </div>
                             <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                                <button type="submit" id="save-activity-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">Adicionar/Atualizar Atividade</button>
-                                <button type="button" id="cancel-edit-btn" class="w-full flex justify-center py-2 px-4 border border-zinc-300 rounded-md shadow-sm text-sm font-medium text-zinc-700 bg-white hover:bg-zinc-50 hidden">Cancelar</button>
+                                <button type="submit" id="save-activity-btn" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Adicionar/Atualizar Atividade</button>
+                                <button type="button" id="cancel-edit-btn" class="w-full flex justify-center py-2.5 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hidden">Cancelar</button>
                             </div>
                         </form>
                     </div>
                     <div id="activities-list-container" class="bg-white p-6 rounded-2xl shadow-lg">
-                         <h3 class="text-xl font-semibold mb-4 text-zinc-700">Minhas Atividades</h3>
+                         <h3 class="text-xl font-semibold mb-4 text-gray-700">Minhas Atividades</h3>
                          <div id="activities-list" class="space-y-3"></div>
                     </div>
                 </div>
@@ -195,20 +209,20 @@
 
         <!-- Modal for selecting activity -->
         <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-            <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white">
+            <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-2xl bg-white">
                 <div class="mt-3 text-center">
                     <h3 class="text-lg leading-6 font-medium text-gray-900">Selecione a Atividade</h3>
-                    <div class="mt-2 px-7 py-3 space-y-3">
-                        <select id="modal-activity-select" class="w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm"></select>
+                    <div class="mt-4 px-2 py-3 space-y-4">
+                        <select id="modal-activity-select" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></select>
                         <div>
-                            <label for="modal-description" class="block text-sm text-left font-medium text-zinc-600">Descrição Específica (Opcional)</label>
-                            <input type="text" id="modal-description" class="mt-1 block w-full px-3 py-2 bg-white border border-zinc-300 rounded-md shadow-sm">
+                            <label for="modal-description" class="block text-sm text-left font-medium text-gray-600">Descrição Específica (Opcional)</label>
+                            <input type="text" id="modal-description" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                         </div>
                     </div>
-                    <div class="items-center px-4 py-3 gap-4 flex flex-col sm:flex-row">
-                        <button id="modal-save" class="w-full px-4 py-2 bg-green-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-600">Salvar</button>
-                        <button id="modal-clear" class="w-full px-4 py-2 bg-orange-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-orange-600">Limpar</button>
-                        <button id="modal-cancel" class="w-full px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-300">Cancelar</button>
+                    <div class="items-center px-4 py-3 gap-3 grid grid-cols-1 sm:grid-cols-3">
+                         <button id="modal-save" class="w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700">Salvar</button>
+                        <button id="modal-clear" class="w-full justify-center rounded-md border border-transparent bg-orange-500 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-orange-600">Limpar</button>
+                        <button id="modal-cancel" class="w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 sm:col-span-3">Cancelar</button>
                     </div>
                 </div>
             </div>
@@ -217,28 +231,21 @@
         <!-- Confirmation Modal -->
         <div id="confirm-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden z-50">
             <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-sm w-full">
-                <h3 id="confirm-modal-title" class="text-lg font-semibold text-zinc-800 mb-2">Confirmar Ação</h3>
-                <p id="confirm-modal-text" class="text-zinc-600 mb-4">Você tem certeza?</p>
+                <h3 id="confirm-modal-title" class="text-lg font-semibold text-gray-800 mb-2">Confirmar Ação</h3>
+                <p id="confirm-modal-text" class="text-gray-600 mb-4">Você tem certeza?</p>
                 <div class="flex justify-end gap-4">
                     <button id="confirm-modal-no" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Não</button>
-                    <button id="confirm-modal-yes" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Sim</button>
+                    <button id="confirm-modal-yes" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Sim</button>
                 </div>
             </div>
         </div>
 
         <!-- Print Legend Section -->
         <div id="print-legend" class="hidden"></div>
-    </div>  
-    <div class="grid grid-cols-2 md:grid-cols-5 justify-center items-center gap-4 mt-6 no-print">
-        <a href="./compcrono.html" class="w-full text-center bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                    Comparar Horários
-                </a>
-                <a href="./contfaltas.html" class="w-full text-center bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                    Contador de faltas
-                </a>
-    </div>
+    </div> 
+    
     <footer class="text-center p-4 mt-8 no-print">
-        <p class="text-sm text-zinc-500">
+        <p class="text-sm text-gray-500">
             Desenvolvido por <a href="https://github.com/Jeanlsg" target="_blank" class="font-semibold text-indigo-600 hover:underline">Jean.Guimaraes</a>
         </p>
     </footer>
@@ -375,15 +382,15 @@
             const renderTimetable = () => {
                 timetable.innerHTML = '';
                 const thead = timetable.createTHead();
-                thead.classList.add('bg-zinc-50');
+                thead.classList.add('bg-gray-50');
                 const headerRow = thead.insertRow();
                 const timeHeader = document.createElement('th');
-                timeHeader.className = 'p-1 border border-zinc-200 sticky left-0 bg-zinc-50 z-10 time-col text-xs font-medium';
+                timeHeader.className = 'p-2 border border-gray-200 sticky left-0 bg-gray-100 z-10 time-col text-xs font-semibold text-gray-600 uppercase tracking-wider';
                 timeHeader.textContent = 'Horário';
                 headerRow.appendChild(timeHeader);
                 days.forEach(day => {
                     const th = document.createElement('th');
-                    th.className = 'p-1 border border-zinc-200 text-xs font-medium';
+                    th.className = 'p-2 border border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider';
                     th.textContent = day;
                     headerRow.appendChild(th);
                 });
@@ -398,13 +405,13 @@
                     
                     const timeCell = row.insertCell();
                     timeCell.textContent = timeRangeStr;
-                    timeCell.className = 'p-1 border border-zinc-200 font-mono text-[10px] sm:text-xs text-zinc-500 sticky left-0 bg-white z-10 time-col whitespace-nowrap';
+                    timeCell.className = 'p-1 border border-gray-200 font-mono text-[10px] sm:text-xs text-gray-500 sticky left-0 bg-white z-10 time-col whitespace-nowrap';
 
                     days.forEach(day => {
                         const cell = row.insertCell();
                         const cellId = `${day}-${timeStr}`;
                         cell.id = cellId;
-                        cell.className = 'p-0 border border-zinc-200 h-12 cursor-pointer hover:bg-zinc-100 transition-colors duration-200';
+                        cell.className = 'p-0 border border-gray-200 h-14 cursor-pointer hover:bg-gray-50 transition-colors duration-200';
                         cell.addEventListener('click', () => onCellClick(cellId));
                         updateCell(cellId);
                     });
@@ -418,11 +425,10 @@
                 if (entry && entry.activityId) {
                     const activity = activities.find(d => d.id == entry.activityId);
                     if (activity) {
-                        // Use specific description if available, otherwise fallback to activity's default description
                         const description = entry.description || activity.description || '';
-                        cell.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-xs font-semibold p-1 overflow-hidden" style="background-color: ${activity.color};">
-                            <span>${activity.abbr}</span>                               
-                            <span class="text-[10px] font-normal text-zinc-600 truncate">${description}</span>
+                        cell.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-gray-800 font-semibold p-1 overflow-hidden" style="background-color: ${activity.color};">
+                            <span class="text-xs">${activity.abbr}</span>
+                            <span class="text-[10px] font-normal text-gray-600 truncate mt-1">${description}</span>
                         </div>`;
                     } else {
                         // Data inconsistency, clear the cell
@@ -437,24 +443,28 @@
             const renderActivitiesList = () => {
                 activitiesList.innerHTML = '';
                 if(activities.length === 0) {
-                    activitiesList.innerHTML = `<p class="text-zinc-500">Nenhuma atividade adicionada ainda.</p>`;
+                    activitiesList.innerHTML = `<p class="text-gray-500">Nenhuma atividade adicionada ainda.</p>`;
                     return;
                 }
                 activities.forEach(d => {
                     const div = document.createElement('div');
-                    div.className = 'flex items-center justify-between p-3 rounded-lg border border-zinc-200';
+                    div.className = 'flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors';
                     div.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="w-5 h-5 rounded-full" style="background-color: ${d.color};"></div>
+                        <div class="flex items-center gap-4 flex-1 min-w-0">
+                            <div class="w-4 h-4 rounded-full flex-shrink-0" style="background-color: ${d.color};"></div>
                             <div class="flex-1 min-w-0">
-                                <p class="font-semibold truncate">${d.name} (${d.abbr})</p>
-                                <p class="text-sm text-zinc-500 truncate">${d.responsible || 'Sem responsável'} - ${d.location || 'Sem local'}</p>
-                                ${d.description ? `<p class="text-xs text-zinc-400 truncate">Padrão: ${d.description}</p>` : ''}
+                                <p class="font-semibold text-gray-800 truncate">${d.name} <span class="text-gray-500">(${d.abbr})</span></p>
+                                <p class="text-sm text-gray-500 truncate">${d.responsible || 'Sem responsável'} - ${d.location || 'Sem local'}</p>
+                                ${d.description ? `<p class="text-xs text-gray-400 truncate mt-1">Padrão: ${d.description}</p>` : ''}
                             </div>
                         </div>
-                        <div class="flex gap-2 flex-shrink-0 ml-2">
-                            <button data-id="${d.id}" class="edit-btn text-blue-500 hover:text-blue-700">Editar</button>
-                            <button data-id="${d.id}" class="delete-btn text-red-500 hover:text-red-700">Excluir</button>
+                        <div class="flex gap-2 flex-shrink-0 ml-4">
+                            <button data-id="${d.id}" class="edit-btn p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Editar">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                            </button>
+                            <button data-id="${d.id}" class="delete-btn p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Excluir">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                            </button>
                         </div>
                     `;
                     activitiesList.appendChild(div);
@@ -490,7 +500,7 @@
                 colorPalette.innerHTML = '';
                 predefinedColors.forEach((color, index) => {
                     const swatch = document.createElement('div');
-                    swatch.className = 'w-8 h-8 rounded-full cursor-pointer border-2 border-transparent hover:border-zinc-500 transition-all';
+                    swatch.className = 'w-8 h-8 rounded-full cursor-pointer border-2 border-transparent hover:border-gray-500 transition-all';
                     swatch.style.backgroundColor = color;
                     swatch.dataset.color = color;
                     swatch.dataset.index = index;
@@ -502,10 +512,10 @@
             const updatePaletteSelection = (selectedColor) => {
                 document.querySelectorAll('#color-palette div').forEach(swatch => {
                     if (swatch.dataset.color.toLowerCase() === selectedColor.toLowerCase()) {
-                        swatch.classList.add('border-zinc-800', 'scale-110');
+                        swatch.classList.add('border-gray-800', 'scale-110');
                         swatch.classList.remove('border-transparent');
                     } else {
-                        swatch.classList.remove('border-zinc-800', 'scale-110');
+                        swatch.classList.remove('border-gray-800', 'scale-110');
                         swatch.classList.add('border-transparent');
                     }
                 });
@@ -646,7 +656,8 @@
             };
 
             const onEditActivity = (e) => {
-                const id = e.target.dataset.id;
+                const button = e.target.closest('button');
+                const id = button.dataset.id;
                 const activity = activities.find(d => d.id == id);
                 if (activity) {
                     formTitle.textContent = 'Editar Atividade';
@@ -676,7 +687,8 @@
             };
 
             const onDeleteActivity = (e) => {
-                const idToDelete = e.target.dataset.id;
+                const button = e.target.closest('button');
+                const idToDelete = button.dataset.id;
                 showConfirm('Excluir Atividade', 'Tem certeza que deseja excluir esta atividade? Isso também a removerá de todo o cronograma.', () => {
                     activities = activities.filter(d => d.id != idToDelete);
                     Object.keys(timetableData).forEach(cellId => {
@@ -804,7 +816,3 @@
     </script>
 </body>
 </html>
-
-
-
-
