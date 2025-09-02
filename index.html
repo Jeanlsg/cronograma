@@ -112,13 +112,7 @@
                 </button>
                  <button id="import-btn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
                     Importar Dados
-                </button>
-                 <a href="./compcrono.html" class="w-full text-center bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                    Comparar Horários
-                </a>
-                <a href="./contfaltas.html" class="w-full text-center bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                    Contador de faltas
-                </a>
+                </button>                 
                  <button id="clear-all-btn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 col-span-2 md:col-span-1">
                     Limpar Tudo
                 </button>
@@ -234,7 +228,15 @@
 
         <!-- Print Legend Section -->
         <div id="print-legend" class="hidden"></div>
-    </div>    
+    </div>  
+    <div class="grid grid-cols-2 md:grid-cols-5 justify-center items-center gap-4 mt-6 no-print">
+        <a href="./compcrono.html" class="w-full text-center bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                    Comparar Horários
+                </a>
+                <a href="./contfaltas.html" class="w-full text-center bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                    Contador de faltas
+                </a>
+    </div>
     <footer class="text-center p-4 mt-8 no-print">
         <p class="text-sm text-zinc-500">
             Desenvolvido por <a href="https://github.com/Jeanlsg" target="_blank" class="font-semibold text-indigo-600 hover:underline">Jean.Guimaraes</a>
@@ -802,6 +804,7 @@
     </script>
 </body>
 </html>
+
 
 
 
